@@ -8,29 +8,42 @@ using Microsoft.EntityFrameworkCore;
 using BookStoreAppAPI.Data;
 using BookStoreAppAPI.Models.Author;
 using AutoMapper;
+using BookStoreAppAPI.Static;
 
 namespace BookStoreAppAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthorController : ControllerBase
+    public class AuthorsController : ControllerBase
     {
         private readonly BookStoreDbContext _context;
         private readonly IMapper mapper;
+        private readonly ILogger<AuthorsController> logger;
 
-        public AuthorController(BookStoreDbContext context, IMapper mapper)
+        public AuthorsController(BookStoreDbContext context, IMapper mapper, ILogger<AuthorsController> logger)
         {
             _context = context;
             this.mapper = mapper;
+            this.logger = logger;            
         }
 
         // GET: api/Author
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AuthorReadOnlyDto>>> GetAuthors()
         {
-            var authorDto = mapper.Map< IEnumerable <AuthorReadOnlyDto>>(
-             await _context.Authors.ToListAsync());
-            return Ok(authorDto);
+            logger.LogInformation($"my:Request to {nameof(GetAuthors)}");
+            try
+            {
+                var authorDto = mapper.Map<IEnumerable<AuthorReadOnlyDto>>(
+                 await _context.Authors.ToListAsync());
+                return Ok(authorDto);
+            } catch (Exception ex)
+            {
+                logger.LogError(ex, $"my:Error Performing GET in {nameof(GetAuthors)}");
+                //return BadRequest();// throw;
+                return StatusCode(500, Messages.Eror500Message);
+            }
+            
         }
 
         // GET: api/Author/5
