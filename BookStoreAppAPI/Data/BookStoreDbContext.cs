@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAppAPI.Data;
 
-public partial class BookStoreDbContext : DbContext
+public partial class BookStoreDbContext : IdentityDbContext
 {
     public BookStoreDbContext()
     {

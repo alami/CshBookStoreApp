@@ -1,5 +1,6 @@
 using BookStoreAppAPI.Configurations;
 using BookStoreAppAPI.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -11,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BookStoreDbContext> (options => options.UseSqlServer(
     "Server=(localdb)\\mssqllocaldb;Database=BookStoreDb;Trusted_Connection=True;")
 );
+builder.Services
+    .AddIdentityCore<IdentityUser>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<BookStoreDbContext>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
