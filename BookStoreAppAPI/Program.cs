@@ -13,7 +13,7 @@ builder.Services.AddDbContext<BookStoreDbContext> (options => options.UseSqlServ
     "Server=(localdb)\\mssqllocaldb;Database=BookStoreDb;Trusted_Connection=True;")
 );
 builder.Services
-    .AddIdentityCore<IdentityUser>()
+    .AddIdentityCore<ApiUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<BookStoreDbContext>();
 
