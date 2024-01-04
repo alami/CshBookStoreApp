@@ -9,6 +9,7 @@ using BookStoreAppAPI.Data;
 using AutoMapper;
 using BookStoreAppAPI.Models.Author;
 using BookStoreAppAPI.Models.Book;
+using AutoMapper.QueryableExtensions;
 
 namespace BookStoreAppAPI.Controllers
 {
@@ -31,34 +32,46 @@ namespace BookStoreAppAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookReadOnlyDto>>> GetBooks()
         {
-            var books = await _context.Books.Include(q=>q.Author).ToListAsync();
-            var bookDtos = mapper.Map<IEnumerable<BookReadOnlyDto>>(books);
-            return Ok(bookDtos);
+            var books = await _context.Books
+                .Include(q=>q.Author)
+                .ProjectTo<BookReadOnlyDto>(mapper.ConfigurationProvider) // <---+
+                .ToListAsync();
+//            var bookDtos = mapper.Map<IEnumerable<BookReadOnlyDto>>(books); <--+
+            return Ok(books);
         }
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<BookDetailsDto>> GetBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books
+                .Include(q => q.Author)
+                .ProjectTo<BookReadOnlyDto>(mapper.ConfigurationProvider) 
+                .FirstOrDefaultAsync(q => q.Id == id);
 
             if (book == null)
             {
                 return NotFound();
             }
 
-            return book;
+            return Ok(book);
         }
 
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, BookUpdateDto bookDto)
         {
-            if (id != book.Id)
+            if (id != bookDto.Id)
             {
                 return BadRequest();
             }
+            var book = await _context.Books.FindAsync(id);
+            if (book==null)
+            {
+                return NotFound();
+            }
+            mapper.Map(bookDto, book);
 
             _context.Entry(book).State = EntityState.Modified;
 
@@ -68,7 +81,7 @@ namespace BookStoreAppAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookExists(id))
+                if (!await BookExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -84,8 +97,9 @@ namespace BookStoreAppAPI.Controllers
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Book>> PostBook(BookCreateDto bookDto)
         {
+            var book = mapper.Map<Book>(bookDto);
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
 
@@ -108,9 +122,9 @@ namespace BookStoreAppAPI.Controllers
             return NoContent();
         }
 
-        private bool BookExists(int id)
+        private async Task<bool> BookExistsAsync(int id)
         {
-            return _context.Books.Any(e => e.Id == id);
+            return await _context.Books.AnyAsync(e => e.Id == id);
         }
     }
 }
