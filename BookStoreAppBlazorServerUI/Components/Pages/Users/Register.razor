@@ -1,17 +1,18 @@
 ﻿@page "/users/register"
 @inject IClient httpClient
 @inject NavigationManager navManager
+@rendermode RenderMode.InteractiveServer
 
 <h3>Register New Account</h3>
-
-@if(string.IsNullOrEmpty(message) == false)
-{ 
-    <div class="alert alert-danger">
+@if (string.IsNullOrEmpty(message) == false)
+{
+    <div class="alert alert-success">
         <p>@message</p>
     </div>
 }
 <div class="card-body">
-    <EditForm Model="RegistrationModel" OnInvalidSubmit="HandleRegistration">
+
+    <EditForm Model="RegistrationModel" OnValidSubmit="HandleRegistration">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <div class="form-group">
@@ -39,24 +40,29 @@
 </div>
 
 @code {
-        UserDto RegistrationModel = new UserDto
-        {
-            Role = "User"
-    };
     string message = string.Empty;
-
-    private async Task HandleRegistration ()
+    UserDto RegistrationModel = new UserDto
+    {
+        Role = "User"
+    };
+    private async Task HandleRegistration()
     {
         RegistrationModel.Role = "User";
         try
         {
+            message = $"{RegistrationModel.Email}"
+                        + $" {RegistrationModel.FirstName}"
+                        + $" {RegistrationModel.LastName}"
+                        + $" {RegistrationModel.Role}"
+                        + $" {RegistrationModel.Password}"
+                        ;
             await httpClient.RegisterAsync(RegistrationModel);
-            navManager.NavigateTo("/users/login");
+            navManager.NavigateTo("/counter");
 
-        } catch (ApiException ex)
+        }
+        catch (ApiException ex)
         {
             message = ex.Message;
         }
     }
-
 }
