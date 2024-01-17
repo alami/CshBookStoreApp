@@ -20,16 +20,19 @@
             <InputText class="form-control" @bind-Value="RegistrationModel.Email" />
             <ValidationMessage For="@(()=>RegistrationModel.Email)" />
         </div>
+        <br />
         <div class="form-group">
             <label for="firstname">First Name</label>
             <InputText class="form-control" @bind-Value="RegistrationModel.FirstName" />
             <ValidationMessage For="@(()=>RegistrationModel.FirstName)" />
         </div>
+        <br />
         <div class="form-group">
             <label for="lastname">Last Name</label>
             <InputText class="form-control" @bind-Value="RegistrationModel.LastName" />
             <ValidationMessage For="@(()=>RegistrationModel.LastName)" />
         </div>
+        <br />
         <div class="form-group">
             <label for="password">Password</label>
             <InputText type="password" class="form-control" @bind-Value="RegistrationModel.Password" />
@@ -50,19 +53,20 @@
         RegistrationModel.Role = "User";
         try
         {
-            message = $"{RegistrationModel.Email}"
-                        + $" {RegistrationModel.FirstName}"
-                        + $" {RegistrationModel.LastName}"
-                        + $" {RegistrationModel.Role}"
-                        + $" {RegistrationModel.Password}"
-                        ;
             await httpClient.RegisterAsync(RegistrationModel);
-            navManager.NavigateTo("/counter");
-
+            NavigateToLogin();
         }
         catch (ApiException ex)
         {
-            message = ex.Message;
+            if(ex.StatusCode >= 200 && ex.StatusCode <= 299)
+            {
+                NavigateToLogin();
+            }
+            message = ex.Response;
         }
+    }
+    private void NavigateToLogin ()
+    {
+        navManager.NavigateTo("/users/login");
     }
 }
