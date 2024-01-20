@@ -1,0 +1,40 @@
+﻿@page "/authors/"
+@inject IClient httpClient
+<h3>Index</h3>
+@if(Authors == null)
+{
+        <div class="alert alert-info"><h4>Loading Data...</h4></div>
+    }
+else
+    {
+        <a href="/austhors/create" class="btn btn-dark"><span class="bi bi-list-nested-nav-menu"></span>Create</a>
+        <br />
+        <table class="table table-responsive">
+            <thead>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                @foreach(var author in Authors)
+                {
+                    <tr>
+                        <td>@author.FirstName</td>
+                        <td>@author.LastName</td>
+                        <td>
+                            <a href="/austhors/details" class="btn btn-primary"><span class="bi bi-list-nested-nav-menu"></span>Details</a>
+                            <a href="/austhors/edit" class="btn btn-warning"><span class="bi bi-list-nested-nav-menu"></span>Edit</a>
+                            <a href="/austhors/delete" class="btn btn-danger"><span class="bi bi-list-nested-nav-menu"></span>Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+@code {
+    private List<AuthorReadOnlyDto> Authors;
+    protected override async Task OnInitializedAsync()
+    {
+        Authors = (await httpClient.AuthorsAllAsync()).ToList();
+    }
+}
