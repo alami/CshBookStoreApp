@@ -5,5 +5,6 @@ namespace BookStoreAppBlazorServerUI.Services.Authentication
     public interface IAuthenticationService
     {
         Task<bool> AuthenticateAsync(LoginUserDto LoginModel);
+        public Task Logout();
     }
 }
