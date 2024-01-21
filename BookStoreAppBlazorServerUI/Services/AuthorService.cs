@@ -11,8 +11,7 @@ namespace BookStoreAppBlazorServerUI.Services
         {
             this.client = client;
         }
-/*
-        public async Task<Response<int>> Create(AuthorCreateDto author)
+        public async Task<Response<int>> CreateAuthor(AuthorCreateDto author)
         {
             Response<int> response = new();
 
@@ -28,6 +27,7 @@ namespace BookStoreAppBlazorServerUI.Services
 
             return response;
         }
+/*
 
         public async Task<Response<int>> Delete(int id)
         {

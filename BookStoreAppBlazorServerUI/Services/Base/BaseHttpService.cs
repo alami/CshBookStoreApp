@@ -30,6 +30,14 @@ namespace BookStoreAppBlazorServerUI.Services.Base
                     Success=false
                 };
             }
+            if (apiException.StatusCode >= 200 && apiException.StatusCode <= 299)
+            {
+                return new Response<Guid>() { 
+                    Message = "Operation Reported Success", 
+                    Success = true 
+                };
+            }
+
             return new Response<Guid>()
             {
                 Message = "[any] Domething went wrong, pls try again",

@@ -17,30 +17,30 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="users/register">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> @context.User?.Identity?.Name
+                        <span class="oi oi-person" aria-hidden="true"></span>&nbsp; @context.User?.Identity?.Name
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="users/logout">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Log Out
+                        <span class="oi oi-arrow-circle-left" aria-hidden="true"></span>&nbsp; Log Out
                     </NavLink>
                 </div>
                 <hr />
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="authors/">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Authors
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>&nbsp; Authors
                     </NavLink>
                 </div>
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="users/register">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register
+                        <span class="oi oi-plus" aria-hidden="true"></span>&nbsp; Register
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="users/login">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+                        <span class="oi oi-person" aria-hidden="true"></span>&nbsp; Login
                     </NavLink>
                 </div>
             </NotAuthorized>
