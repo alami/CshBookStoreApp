@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using BookStoreAppBlazorServerUI.Components;
+using BookStoreAppBlazorServerUI.Configurations;
 using BookStoreAppBlazorServerUI.Providers;
 using BookStoreAppBlazorServerUI.Services;
 using BookStoreAppBlazorServerUI.Services.Authentication;
@@ -20,6 +21,8 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(p=>
    p.GetRequiredService<ApiAuthenticationStateProvider>());
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 var app = builder.Build();
 

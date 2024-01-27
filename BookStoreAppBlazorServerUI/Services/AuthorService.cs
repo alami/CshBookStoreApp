@@ -1,4 +1,5 @@
-﻿using Blazored.LocalStorage;
+﻿using AutoMapper;
+using Blazored.LocalStorage;
 using BookStoreAppBlazorServerUI.Services.Base;
 
 namespace BookStoreAppBlazorServerUI.Services
@@ -6,10 +7,12 @@ namespace BookStoreAppBlazorServerUI.Services
     public class AuthorService : BaseHttpService, IAuthorService
     {
         private readonly IClient client;
+        private readonly IMapper mapper;
 
-        public AuthorService(IClient client, ILocalStorageService localStorage) : base(client, localStorage)
+        public AuthorService(IClient client, ILocalStorageService localStorage, IMapper mapper) : base(client, localStorage)
         {
             this.client = client;
+            this.mapper = mapper;
         }
         public async Task<Response<int>> CreateAuthor(AuthorCreateDto author)
         {
@@ -19,24 +22,6 @@ namespace BookStoreAppBlazorServerUI.Services
             {
                 await GetBearerToken();
                 await client.AuthorsPOSTAsync(author);
-            }
-            catch (ApiException exception)
-            {
-                response = ConvertApiExceptions<int>(exception);
-            }
-
-            return response;
-        }
-/*
-
-        public async Task<Response<int>> Delete(int id)
-        {
-            Response<int> response = new();
-
-            try
-            {
-                await GetBearerToken();
-                await client.AuthorsDELETEAsync(id);
             }
             catch (ApiException exception)
             {
@@ -63,50 +48,70 @@ namespace BookStoreAppBlazorServerUI.Services
             return response;
         }
 
-        public async Task<Response<AuthorDetailsDto>> Get(int id)
-        {
-            Response<AuthorDetailsDto> response;
+        /*
 
-            try
-            {
-                await GetBearerToken();
-                var data = await client.AuthorsGET2Async(id);
-                response = new Response<AuthorDetailsDto>
+                public async Task<Response<int>> Delete(int id)
                 {
-                    Data = data,
-                    Success = true
-                };
-            }
-            catch (ApiException exception)
-            {
-                response = ConvertApiExceptions<AuthorDetailsDto>(exception);
-            }
+                    Response<int> response = new();
 
-            return response;
-        }
+                    try
+                    {
+                        await GetBearerToken();
+                        await client.AuthorsDELETEAsync(id);
+                    }
+                    catch (ApiException exception)
+                    {
+                        response = ConvertApiExceptions<int>(exception);
+                    }
 
-        public async Task<Response<AuthorReadOnlyDtoVirtualizeResponse>> Get(QueryParameters queryParams)
-        {
-            Response<AuthorReadOnlyDtoVirtualizeResponse> response;
+                    return response;
+                }
 
-            try
-            {
-                await GetBearerToken();
-                var data = await client.AuthorsGETAsync(queryParams.StartIndex, queryParams.PageSize);
-                response = new Response<AuthorReadOnlyDtoVirtualizeResponse>
+
+                public async Task<Response<AuthorDetailsDto>> Get(int id)
                 {
-                    Data = data,
-                    Success = true
-                };
-            }
-            catch (ApiException exception)
-            {
-                response = ConvertApiExceptions<AuthorReadOnlyDtoVirtualizeResponse>(exception);
-            }
+                    Response<AuthorDetailsDto> response;
 
-            return response;
-        }
-*/
+                    try
+                    {
+                        await GetBearerToken();
+                        var data = await client.AuthorsGET2Async(id);
+                        response = new Response<AuthorDetailsDto>
+                        {
+                            Data = data,
+                            Success = true
+                        };
+                    }
+                    catch (ApiException exception)
+                    {
+                        response = ConvertApiExceptions<AuthorDetailsDto>(exception);
+                    }
+
+                    return response;
+                }
+
+                public async Task<Response<AuthorReadOnlyDtoVirtualizeResponse>> Get(QueryParameters queryParams)
+                {
+                    Response<AuthorReadOnlyDtoVirtualizeResponse> response;
+
+                    try
+                    {
+                        await GetBearerToken();
+                        var data = await client.AuthorsGETAsync(queryParams.StartIndex, queryParams.PageSize);
+                        response = new Response<AuthorReadOnlyDtoVirtualizeResponse>
+                        {
+                            Data = data,
+                            Success = true
+                        };
+                    }
+                    catch (ApiException exception)
+                    {
+                        response = ConvertApiExceptions<AuthorReadOnlyDtoVirtualizeResponse>(exception);
+                    }
+
+                    return response;
+                }
+        */
         public async Task<Response<List<AuthorReadOnlyDto>>> GetAuthors()
         {
             Response<List<AuthorReadOnlyDto>> response;
@@ -129,7 +134,29 @@ namespace BookStoreAppBlazorServerUI.Services
 
             return response;
         }
-/*
+        public async Task<Response<AuthorReadOnlyDto>> GetAuthor(int id)
+        {
+            Response<AuthorReadOnlyDto> response;
+
+            try
+            {
+                await GetBearerToken();
+                var data = await client.AuthorsGETAsync(id);
+//                var data = await client.GetAllAsync();
+                response = new Response<AuthorReadOnlyDto>
+                {
+                    Data = data,
+                    Success = true
+                };
+            }
+            catch (ApiException exception)
+            {
+                response = ConvertApiExceptions<AuthorReadOnlyDto>(exception);
+            }
+
+            return response;
+        }
+
         public async Task<Response<AuthorUpdateDto>> GetForUpdate(int id)
         {
             Response<AuthorUpdateDto> response;
@@ -137,7 +164,8 @@ namespace BookStoreAppBlazorServerUI.Services
             try
             {
                 await GetBearerToken();
-                var data = await client.AuthorsGET2Async(id);
+                var data = await client.AuthorsGETAsync(id);
+//                var data = await client.AuthorsGET2Async(id);
                 response = new Response<AuthorUpdateDto>
                 {
                     Data = mapper.Map<AuthorUpdateDto>(data),
@@ -151,7 +179,5 @@ namespace BookStoreAppBlazorServerUI.Services
 
             return response;
         }
-*/
-
     }
 }
