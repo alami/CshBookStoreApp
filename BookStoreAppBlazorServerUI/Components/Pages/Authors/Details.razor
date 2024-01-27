@@ -22,8 +22,29 @@
             <InputTextArea @bind-Value="Author.Bio" class="form-control" id="bio" />
             <ValidationMessage For="@(() => Author.Bio)" />
         </div>
+        <br />
     </fieldset>
-    <br />
+
+    @if (Author.Books == null || Author.Books.Any() == false)
+    {
+        <div class="alert alert-dismissible alert-secondary">
+            No Books for this author
+        </div>
+    }
+    else
+    {
+        foreach (var book in Author.Books)
+        {
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="@book.Image" alt="@book.Title">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title - @book.Price.ToString("C")</h5>
+                    <p class="card-text">@book.Price</p>
+                    <a href="#" class="btn btn-primary">View Book </a>
+                </div>
+            </div>
+        }
+    }
     <button @onclick="GoToEdit" class="btn btn-warning">
         <span class="oi oi-pencil"></span>
         Edit author
@@ -38,7 +59,7 @@
 @code {
     [Parameter]
     public int id { get; set; }
-    private AuthorReadOnlyDto Author = new AuthorReadOnlyDto();
+    private AuthorDetailsDto Author = new AuthorDetailsDto();
     protected async override Task OnInitializedAsync()
     {
         var response = await authorService.GetAuthor(id);
@@ -49,7 +70,7 @@
     }
     private void GoToEdit()
     {
-        navManager.NavigateTo("/authors/update/{Author.Id}");
+        navManager.NavigateTo("/authors/update/");
     }
     private void BackToList()
     {
