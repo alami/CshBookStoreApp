@@ -7,8 +7,9 @@ namespace BookStoreAppBlazorServerUI.Configurations
     {
         public MapperConfig()
         {
-            CreateMap<AuthorReadOnlyDto, AuthorUpdateDto>().ReverseMap();
-            CreateMap<AuthorDetailsDto, Author>().ReverseMap();
+            CreateMap<AuthorDetailsDto, AuthorUpdateDto>().ReverseMap();
+            //CreateMap<AuthorReadOnlyDto, AuthorUpdateDto>().ReverseMap();
+            //CreateMap<AuthorDetailsDto, Author>().ReverseMap();
 
         }
     }
