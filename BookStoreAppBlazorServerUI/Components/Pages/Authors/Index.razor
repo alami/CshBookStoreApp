@@ -12,56 +12,61 @@
 }
 else
 {
+<AuthorizeView Roles="Administrator">
     <a href="/authors/create" class="btn btn-dark"><span class="bi bi-list-nested-nav-menu"></span>Create</a>
     <br />
-    <table class="table table-responsive">
-        <thead>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Actions</th>
-        </thead>
-        <tbody>
-            @foreach (var author in Authors)
-            {
-                <tr>
-                    <td>@author.FirstName</td>
-                    <td>@author.LastName</td>
-                    <td>
-                        <a href="/authors/details/@author.Id" class="btn btn-primary"><span class="bi bi-list-nested-nav-menu"></span>Details</a>
-                        <a href="/authors/update/@author.Id" class="btn btn-warning"><span class="bi bi-list-nested-nav-menu"></span>Edit</a>
-                        <button @onclick="@(() => Delete(@author.Id))" class="btn btn-danger"><span class="bi bi-list-nested-nav-menu"></span>Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-@code {
-    private List<AuthorReadOnlyDto> Authors;
-    private Response<List<AuthorReadOnlyDto>> response = new Response<List<AuthorReadOnlyDto>>
-    {
-        Success = true
-    };
-
-    protected override async Task OnInitializedAsync()
-    {
-        // ( Authors = await httpClient.AuthorsAllAsync()).ToList();
-        response = await authorService.GetAuthors();
-        if (response.Success)
-        {
-            Authors = response.Data;
+</AuthorizeView>
+        <table class="table table-responsive">
+            <thead>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Actions</th>
+            </thead>
+            <tbody>
+                @foreach (var author in Authors)
+                {
+                    <tr>
+                        <td>@author.FirstName</td>
+                        <td>@author.LastName</td>
+                        <td>
+                            <a href="/authors/details/@author.Id" class="btn btn-primary"><span class="bi bi-list-nested-nav-menu"></span>Details</a>
+                            <AuthorizeView Roles="Administrator">
+                                <a href="/authors/update/@author.Id" class="btn btn-warning"><span class="bi bi-list-nested-nav-menu"></span>Edit</a>
+                                <button @onclick="@(() => Delete(@author.Id))" class="btn btn-danger"><span class="bi bi-list-nested-nav-menu"></span>Delete</button>
+                            </AuthorizeView>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
         }
-    }
-    private async Task Delete(int authorId)
-    {
-        var author = Authors.First(q=>q.Id == authorId);
-        var conform = await js.InvokeAsync<bool>("confirm", $"Are You Sure Want to Delete {author.FirstName}  ?");
-        if (conform) {
-            var respose = await authorService.Delete(authorId);
+        @code {
+    private List<AuthorReadOnlyDto> Authors;
+        private Response<List<AuthorReadOnlyDto>> response = new Response<List<AuthorReadOnlyDto>>
+        {
+            Success = true
+        };
+
+        protected override async Task OnInitializedAsync()
+        {
+            // ( Authors = await httpClient.AuthorsAllAsync()).ToList();
+            response = await authorService.GetAuthors();
             if (response.Success)
             {
-                await OnInitializedAsync();
+                Authors = response.Data;
             }
         }
-    }
-}
+        private async Task Delete(int authorId)
+        {
+            var author = Authors.First(q => q.Id == authorId);
+            var conform = await js.InvokeAsync<bool>("confirm", $"Are You Sure Want to Delete {author.FirstName}  ?");
+            if (conform)
+            {
+                var respose = await authorService.Delete(authorId);
+                if (response.Success)
+                {
+                    await OnInitializedAsync();
+                }
+            }
+        }
+        }
