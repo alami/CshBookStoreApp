@@ -50,7 +50,7 @@ else
         protected override async Task OnInitializedAsync()
         {
             // ( Authors = await httpClient.AuthorsAllAsync()).ToList();
-            response = await authorService.GetAuthors();
+            response = await authorService.Get();
             if (response.Success)
             {
                 Authors = response.Data;

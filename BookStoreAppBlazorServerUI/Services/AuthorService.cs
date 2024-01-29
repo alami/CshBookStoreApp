@@ -14,7 +14,7 @@ namespace BookStoreAppBlazorServerUI.Services
             this.client = client;
             this.mapper = mapper;
         }
-        public async Task<Response<int>> CreateAuthor(AuthorCreateDto author)
+        public async Task<Response<int>> Create(AuthorCreateDto author)
         {
             Response<int> response = new();
 
@@ -109,7 +109,7 @@ namespace BookStoreAppBlazorServerUI.Services
                     return response;
                 }
         */
-        public async Task<Response<List<AuthorReadOnlyDto>>> GetAuthors()
+        public async Task<Response<List<AuthorReadOnlyDto>>> Get()
         {
             Response<List<AuthorReadOnlyDto>> response;
 
@@ -131,7 +131,7 @@ namespace BookStoreAppBlazorServerUI.Services
 
             return response;
         }
-        public async Task<Response<AuthorDetailsDto>> GetAuthor(int id)
+        public async Task<Response<AuthorDetailsDto>> Get(int id)
         {
             Response<AuthorDetailsDto> response;
 
