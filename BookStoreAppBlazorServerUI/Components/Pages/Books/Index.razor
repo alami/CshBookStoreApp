@@ -31,6 +31,7 @@ else
                     <td><img src="@book.Image" width="100" height="100" alt="@book.Title" /></td>
                     <td>@book.Title</td>
                     <td>@book.Price.ToString("C")</td>
+                    <td><a class="btn btn-link" href="/authors/details/@book.AuthorId">@book.AuthorName</a></td>
                     <td>
                         <a href="/books/details/@book.Id" class="btn btn-primary"><span class="bi bi-list-nested-nav-menu"></span>Details</a>
                         <AuthorizeView Roles="Administrator">
