@@ -10,6 +10,7 @@ using BookStoreAppAPI.Models.Author;
 using AutoMapper;
 using BookStoreAppAPI.Static;
 using AutoMapper.QueryableExtensions;
+using BookStoreAppAPI.Repositories;
 
 namespace BookStoreAppAPI.Controllers
 {
@@ -17,13 +18,13 @@ namespace BookStoreAppAPI.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
-        private readonly BookStoreDbContext _context;
+        private readonly IAuthorRepository authorRepository;
         private readonly IMapper mapper;
         private readonly ILogger<AuthorsController> logger;
 
-        public AuthorsController(BookStoreDbContext context, IMapper mapper, ILogger<AuthorsController> logger)
+        public AuthorsController(IAuthorRepository authorRepository, IMapper mapper, ILogger<AuthorsController> logger)
         {
-            _context = context;
+            this.authorRepository = authorRepository;
             this.mapper = mapper;
             this.logger = logger;            
         }
@@ -36,7 +37,7 @@ namespace BookStoreAppAPI.Controllers
             try
             {
                 var authorDto = mapper.Map<IEnumerable<AuthorReadOnlyDto>>(
-                 await _context.Authors.ToListAsync());
+                 await authorRepository.GetAllAsync());
                 return Ok(authorDto);
             } catch (Exception ex)
             {
@@ -53,10 +54,7 @@ namespace BookStoreAppAPI.Controllers
         {
             try
             {
-                var author = await _context.Authors
-                    .Include(q=>q.Books)
-                    .ProjectTo<AuthorDetailsDto>(mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(q=> q.Id==id);
+                var author = await authorRepository.GetAuthorDetailsAsync(id);
 
                 if (author == null)
                 {
@@ -80,19 +78,18 @@ namespace BookStoreAppAPI.Controllers
                 return BadRequest();
             }
 
-            var author = await _context.Authors.FindAsync(id);
+            var author = await authorRepository.GetAsync(id);
             if (author == null)
             {
                 return NotFound();
             }
             mapper.Map(authorDto, author);
-            _context.Entry(author).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await authorRepository.UpdateAsync(author);                
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!await AuthorExists(id))
                 {
@@ -100,7 +97,8 @@ namespace BookStoreAppAPI.Controllers
                 }
                 else
                 {
-                    throw;
+                    logger.LogError(ex,$"Error Performing GET in {nameof(PutAuthor)}");
+                    return StatusCode(500, Messages.Eror500Message);
                 }
             }
 
@@ -112,38 +110,43 @@ namespace BookStoreAppAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<AuthorCreateDto>> PostAuthor(AuthorCreateDto authorDto)
         {
-            var author = mapper.Map<Author>(authorDto);
-                        /*new Author() {
-                FirstName = authorDto.FirstName,
-                LastName = authorDto.LastName,
-                Bio = authorDto.Bio,
-            };*/
+            try
+            {
+                var author = mapper.Map<Author>(authorDto);
+                /*new Author() {
+        FirstName = authorDto.FirstName,
+        LastName = authorDto.LastName,
+        Bio = authorDto.Bio,
+    };*/
 
-            _context.Authors.Add(author);
-            await _context.SaveChangesAsync();
+                await authorRepository.AddAsync(author);
 
-            return CreatedAtAction(nameof(GetAuthor), new { id = author.Id }, author);
+                return CreatedAtAction(nameof(GetAuthor), new { id = author.Id }, author);
+            }catch (Exception ex)
+            {
+                logger.LogError(ex, $"Error Performing POST in {nameof(PostAuthor)}", authorDto);
+                return StatusCode(500, Messages.Eror500Message);
+            }
         }
 
         // DELETE: api/Author/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
-            var author = await _context.Authors.FindAsync(id);
+            var author = await authorRepository.GetAsync(id);
             if (author == null)
             {
                 return NotFound();
             }
 
-            _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
+            await authorRepository.DeleteAsync(id);            
 
             return NoContent();
         }
 
         private async Task<bool> AuthorExists(int id)
         {
-            return await _context.Authors.AnyAsync(e => e.Id == id);
+            return await authorRepository.Exist(id);
         }
     }
 }

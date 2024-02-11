@@ -1,5 +1,6 @@
 using BookStoreAppAPI.Configurations;
 using BookStoreAppAPI.Data;
+using BookStoreAppAPI.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,9 @@ builder.Services
     .AddIdentityCore<ApiUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<BookStoreDbContext>();
+
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
